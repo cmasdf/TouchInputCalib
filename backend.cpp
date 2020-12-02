@@ -7,7 +7,7 @@ BackEnd::BackEnd(QObject *parent) : QObject(parent) {
 }
 
 void BackEnd::buttonClicked() {
-
+    qDebug() << "BackEnd::buttonClicked() called";
 }
 
 BackEnd::~BackEnd() {

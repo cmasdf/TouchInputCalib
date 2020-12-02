@@ -1,31 +1,33 @@
 import QtQuick 2.13
+import QtQuick.Window 2.13
 import QtQuick.Controls 2.13
 
 import io.qt.examples.backend 1.0
 
-Item {
-    visible: true
+QtObject {
+    id: root
 
-    ApplicationWindow {
+    property var backend: BackEnd {
+        id: backend
+    }
+
+    property var window1: Window {
+        id: "applicationWindow1"
+
         visible: true
         width: 1920
         height: 1080
+        x: 0
+        y: 0
 
         visibility: ApplicationWindow.Windowed
-        screen: Qt.application.screens[1]
 
         objectName: "applicationWindow1"
-
-        /*BackEnd {
-            id: backend1
-        }*/
 
         Item {
             id: leftScreen
 
-            width: parent.width/2
-            height: parent.height
-            anchors.left: parent.left
+            anchors.fill: parent
 
             Rectangle {
                 id: button1
@@ -61,25 +63,24 @@ Item {
             }
         }
     }
-}
 
+    property var window2: Window {
+        id: applicationWindow2
 
-    /*ApplicationWindow {
-        objectName: "applicationWindow2"
         visible: true
         width: 1920
         height: 1080
+        x: Screen.desktopAvailableWidth/2
+        y: 0
 
-        BackEnd {
-            id: backend2
-        }
+        visibility: ApplicationWindow.Windowed
+
+        objectName: "applicationWindow2"
 
         Item {
             id: rightScreen
 
-            width: parent.width/2
-            height: parent.height
-            anchors.right: parent.right
+            anchors.fill: parent
 
             Rectangle {
                 id: button2
@@ -115,4 +116,4 @@ Item {
             }
         }
     }
-}*/
+}

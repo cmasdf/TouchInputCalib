@@ -46,17 +46,18 @@ int main(int argc, char *argv[]) {
     engine.load(url);
 
     auto *wnd1 = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow1");
-    if(wnd1)
+    if(wnd1) {
         wnd1->setTitle("Touchscreen Determination 1");
+        if (fullscreen) {
+            wnd1->setVisibility(QWindow::FullScreen);
+        }
+    }
     auto *wnd2 = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow2");
-    if(wnd2)
+    if(wnd2) {
         wnd2->setTitle("Touchscreen Determination 2");
-
-    //auto *MainWindow = engine.rootObjects().first();
-
-    // fullscreen mode
-    if (fullscreen) {
-        //MainWindow->setProperty("visibility", "FullScreen");
+        if (fullscreen) {
+            wnd2->setVisibility(QWindow::FullScreen);
+        }
     }
 
     return QGuiApplication::exec();
