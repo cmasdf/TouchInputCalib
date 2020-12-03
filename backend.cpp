@@ -2,13 +2,10 @@
 #include <QGuiApplication>
 #include <QDebug>
 
-BackEnd::BackEnd(QObject *parent) : QObject(parent) {
-    QObject::connect(this, SIGNAL(counter_reached()), QGuiApplication::instance(), SLOT(quit()));
+BackEnd::BackEnd(QObject *parent) : QObject(parent) {}
+
+void BackEnd::buttonClicked(QPointF point) {
+    qDebug() << "Button clicked at" << point;
 }
 
-void BackEnd::buttonClicked() {
-    qDebug() << "BackEnd::buttonClicked() called";
-}
-
-BackEnd::~BackEnd() {
-}
+BackEnd::~BackEnd() = default;

@@ -3,19 +3,16 @@
 
 #include <QObject>
 #include <QEvent>
+#include <QPointF>
 
-class BackEnd : public QObject
-{
-    Q_OBJECT
+class BackEnd : public QObject {
+Q_OBJECT
 public:
     explicit BackEnd(QObject *parent = nullptr);
-    ~BackEnd();
+    ~BackEnd() override;
+
 public slots:
-    void buttonClicked();
-signals:
-    void counter_reached();
-private:
-    int m_counter;
+    void buttonClicked(QPointF point);
 };
 
 #endif // BACKEND_H
