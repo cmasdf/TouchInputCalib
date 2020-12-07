@@ -3,7 +3,8 @@
 #include <QCommandLineParser>
 #include <QQuickWindow>
 
-#include "backend.h"
+#include <src/Monitor.h>
+#include <src/Backend.h>
 
 int main(int argc, char *argv[]) {
     // processing command line inputs
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
         fullscreen = true;
     }
 
-    qmlRegisterType<BackEnd>("io.qt.examples.backend", 1, 0, "BackEnd");
+    qmlRegisterType<Backend>("io.qt.examples.backend", 1, 0, "Backend");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
@@ -44,6 +45,8 @@ int main(int argc, char *argv[]) {
                     QCoreApplication::exit(-1);
             }, Qt::QueuedConnection);
     engine.load(url);
+
+    auto monitor = Monitor();
 
     auto *wnd1 = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow1");
     if(wnd1) {

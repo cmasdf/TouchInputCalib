@@ -5,11 +5,11 @@
 #include <QEvent>
 #include <QPointF>
 
-class BackEnd : public QObject {
+class Backend : public QObject {
 Q_OBJECT
 public:
-    explicit BackEnd(QObject *parent = nullptr);
-    ~BackEnd() override;
+    explicit Backend(QObject *parent = nullptr);
+    ~Backend() override;
 
 public slots:
     void buttonClicked(QPointF point);

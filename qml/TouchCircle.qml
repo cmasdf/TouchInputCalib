@@ -5,7 +5,7 @@ import io.qt.examples.backend 1.0
 Item {
     anchors.fill: parent
 
-    BackEnd {
+    Backend {
         id: backend
     }
 
