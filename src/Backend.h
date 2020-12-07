@@ -2,7 +2,6 @@
 #define BACKEND_H
 
 #include <QObject>
-#include <QEvent>
 #include <QPointF>
 
 class Backend : public QObject {

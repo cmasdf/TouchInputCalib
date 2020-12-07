@@ -12,7 +12,7 @@ find_package(Qt5 COMPONENTS Core Qml Gui QuickCompiler Quick QuickControls2 REQU
 set(SOURCES
         main.cpp
 		src/Backend.cpp
-		src/Monitor.cpp src/Monitor.h)
+		src/Monitor.cpp src/Monitor.h src/InputDevice.cpp src/InputDevice.h)
 
 qtquick_compiler_add_resources(RESOURCES qml.qrc)
 
@@ -29,6 +29,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt5::Quick
         Qt5::QuickControls2
         Qt5::Qml
-		Xrandr
 		X11
+		Xrandr
+		Xi
 )

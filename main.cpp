@@ -4,6 +4,7 @@
 #include <QQuickWindow>
 
 #include <src/Monitor.h>
+#include <src/InputDevice.h>
 #include <src/Backend.h>
 
 int main(int argc, char *argv[]) {
@@ -35,6 +36,9 @@ int main(int argc, char *argv[]) {
         fullscreen = true;
     }
 
+    auto monitor = Monitor();
+    auto inputDev = InputDevice();
+
     qmlRegisterType<Backend>("io.qt.examples.backend", 1, 0, "Backend");
 
     QQmlApplicationEngine engine;
@@ -45,8 +49,6 @@ int main(int argc, char *argv[]) {
                     QCoreApplication::exit(-1);
             }, Qt::QueuedConnection);
     engine.load(url);
-
-    auto monitor = Monitor();
 
     auto *wnd1 = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow1");
     if(wnd1) {
