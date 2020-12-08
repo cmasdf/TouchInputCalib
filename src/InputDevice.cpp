@@ -12,7 +12,7 @@ InputDevice::InputDevice() {
     Display* display;
     int ndevices = 0;
 
-    display = XOpenDisplay(0);
+    display = XOpenDisplay(nullptr);
 
     devices = XListInputDevices(display, &ndevices);
 
@@ -34,3 +34,7 @@ InputDevice::InputDevice() {
 }
 
 InputDevice::~InputDevice() = default;
+
+QVector<InputDevices_t> InputDevice::getListOfInputDevices() {
+    return m_listOfInputDevices;
+}

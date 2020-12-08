@@ -12,7 +12,7 @@ find_package(Qt5 COMPONENTS Core Qml Gui QuickCompiler Quick QuickControls2 REQU
 set(SOURCES
         main.cpp
 		src/Backend.cpp
-		src/Monitor.cpp src/Monitor.h src/InputDevice.cpp src/InputDevice.h)
+		src/Monitor.cpp src/Monitor.h src/InputDevice.cpp src/InputDevice.h src/Mapping.cpp src/Mapping.h)
 
 qtquick_compiler_add_resources(RESOURCES qml.qrc)
 

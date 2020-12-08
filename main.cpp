@@ -5,6 +5,7 @@
 
 #include <src/Monitor.h>
 #include <src/InputDevice.h>
+#include <src/Mapping.h>
 #include <src/Backend.h>
 
 int main(int argc, char *argv[]) {
@@ -64,6 +65,8 @@ int main(int argc, char *argv[]) {
             wnd2->setVisibility(QWindow::FullScreen);
         }
     }
+
+    auto mapping = Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices());
 
     return QGuiApplication::exec();
 }

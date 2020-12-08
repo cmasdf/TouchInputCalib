@@ -21,6 +21,8 @@ public:
     InputDevice();
     ~InputDevice();
 
+    QVector<InputDevices_t> getListOfInputDevices();
+
 private:
     QVector<InputDevices_t> m_listOfInputDevices = {};
 };

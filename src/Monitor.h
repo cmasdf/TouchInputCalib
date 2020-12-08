@@ -24,6 +24,8 @@ public:
     Monitor();
     ~Monitor();
 
+    QVector<Monitor_t> getListOfMonitors();
+
 private:
     QVector<Monitor_t> m_listOfMonitors = {};
 };
