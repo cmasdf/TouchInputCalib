@@ -51,18 +51,24 @@ int main(int argc, char *argv[]) {
             }, Qt::QueuedConnection);
     engine.load(url);
 
-    auto *wnd1 = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow1");
-    if(wnd1) {
-        wnd1->setTitle("Touchscreen Determination 1");
-        if (fullscreen) {
-            wnd1->setVisibility(QWindow::FullScreen);
-        }
-    }
-    auto *wnd2 = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow2");
-    if(wnd2) {
-        wnd2->setTitle("Touchscreen Determination 2");
-        if (fullscreen) {
-            wnd2->setVisibility(QWindow::FullScreen);
+    QVector<Monitor_t> monitors = monitor.getListOfMonitors();
+
+    for (int i=0; i<monitors.size(); i++) {
+        QString objectName = "applicationWindow" + QString::number(i);
+        auto wnd = engine.rootObjects()[0]->findChild<QQuickWindow *>(objectName);
+        if (wnd) {
+            wnd->setTitle("Touchscreen Determination" + QString::number(i));
+            QString deviceInfo = QString(monitors[i].nameString) + ": " + QString::number(monitors[i].width) + "x" +
+                                 QString::number(monitors[i].height) + "+" + QString::number(monitors[i].x) + "+" +
+                                 QString::number(monitors[i].y);
+            wnd->setProperty("device", deviceInfo);
+            wnd->setWidth(monitors[i].width);
+            wnd->setHeight(monitors[i].height);
+            wnd->setX(monitors[i].x);
+            wnd->setY(monitors[i].y);
+            if (fullscreen) {
+                wnd->setVisibility(QWindow::FullScreen);
+            }
         }
     }
 

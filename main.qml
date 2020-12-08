@@ -6,39 +6,37 @@ import "qml/"
 QtObject {
     id: root
 
-    property var window1: Window {
-        id: "applicationWindow1"
+    property var window0: Window {
+        id: applicationWindow0
+
+        property string device
 
         visible: true
-        width: 1920
-        height: 1080
-        x: 0
-        y: 0
+
+        visibility: ApplicationWindow.Windowed
+
+        objectName: "applicationWindow0"
+
+        MainArea {
+            id: leftScreen
+            device: applicationWindow0.device
+        }
+    }
+
+    property var window1: Window {
+        id: applicationWindow1
+
+        property string device
+
+        visible: true
 
         visibility: ApplicationWindow.Windowed
 
         objectName: "applicationWindow1"
 
-        TouchCircle {
-            id: leftScreen
-        }
-    }
-
-    property var window2: Window {
-        id: applicationWindow2
-
-        visible: true
-        width: 1920
-        height: 1080
-        x: Screen.desktopAvailableWidth/2
-        y: 0
-
-        visibility: ApplicationWindow.Windowed
-
-        objectName: "applicationWindow2"
-
-        TouchCircle {
+        MainArea {
             id: rightScreen
+            device: applicationWindow1.device
         }
     }
 }

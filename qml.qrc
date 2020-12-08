@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>qml/TouchCircle.qml</file>
+        <file>qml/MainArea.qml</file>
     </qresource>
 </RCC>

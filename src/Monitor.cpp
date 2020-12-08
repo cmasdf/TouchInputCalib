@@ -30,8 +30,6 @@ Monitor::Monitor() {
         tmp_Monitor.x = monitorInfo->x;
         tmp_Monitor.y = monitorInfo->y;
 
-
-
         qDebug() << tmp_Monitor.name << "-" << tmp_Monitor.nameString << ":" << tmp_Monitor.width << "x"
                  << tmp_Monitor.height << "+" << tmp_Monitor.x << "+" << tmp_Monitor.y;
 

@@ -12,16 +12,16 @@ find_package(Qt5 COMPONENTS Core Qml Gui QuickCompiler Quick QuickControls2 REQU
 set(SOURCES
         main.cpp
 		src/Backend.cpp
-		src/Monitor.cpp src/Monitor.h src/InputDevice.cpp src/InputDevice.h src/Mapping.cpp src/Mapping.h)
+		src/Monitor.cpp
+		src/InputDevice.cpp
+		src/Mapping.cpp
+)
 
 qtquick_compiler_add_resources(RESOURCES qml.qrc)
 
-add_executable(${PROJECT_NAME} ${RESOURCES} ${SOURCES}
-        )
+add_executable(${PROJECT_NAME} ${RESOURCES} ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-        ${PROJECT_SOURCE_DIR}
-        )
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
        	Qt5::Core
