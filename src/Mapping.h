@@ -1,0 +1,14 @@
+//
+// Created by dmatthes on 08.12.20.
+//
+
+#ifndef TOUCHSCREENDETERMINATION_MAPPING_H
+#define TOUCHSCREENDETERMINATION_MAPPING_H
+
+
+class Mapping {
+
+};
+
+
+#endif //TOUCHSCREENDETERMINATION_MAPPING_H
