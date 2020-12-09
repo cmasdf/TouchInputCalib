@@ -1,12 +1,16 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QCommandLineParser>
 #include <QQuickWindow>
+#include <QtTest/QAbstractItemModelTester>
 
 #include <src/Monitor.h>
 #include <src/InputDevice.h>
 #include <src/Mapping.h>
 #include <src/Backend.h>
+#include <model/AppWindowModel.h>
+#include <model/AppWindowData.h>
 
 int main(int argc, char *argv[]) {
     // processing command line inputs
@@ -43,33 +47,34 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<Backend>("io.qt.examples.backend", 1, 0, "Backend");
 
     QQmlApplicationEngine engine;
+    AppWindowModel appWindowModel;
+    engine.rootContext()->setContextProperty("ApplicationDataModel", &appWindowModel);
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
                 if (!obj && url == objUrl)
                     QCoreApplication::exit(-1);
             }, Qt::QueuedConnection);
-    engine.load(url);
 
     QVector<Monitor_t> monitors = monitor.getListOfMonitors();
 
     for (int i=0; i<monitors.size(); i++) {
-        QString objectName = "applicationWindow" + QString::number(i);
-        auto wnd = engine.rootObjects()[0]->findChild<QQuickWindow *>(objectName);
-        if (wnd) {
-            wnd->setTitle("Touchscreen Determination" + QString::number(i));
-            QString deviceInfo = QString(monitors[i].nameString) + ": " + QString::number(monitors[i].width) + "x" +
-                                 QString::number(monitors[i].height) + "+" + QString::number(monitors[i].x) + "+" +
-                                 QString::number(monitors[i].y);
-            wnd->setProperty("device", deviceInfo);
-            wnd->setWidth(monitors[i].width);
-            wnd->setHeight(monitors[i].height);
-            wnd->setX(monitors[i].x);
-            wnd->setY(monitors[i].y);
-            if (fullscreen) {
-                wnd->setVisibility(QWindow::FullScreen);
-            }
-        }
+        AppWindowData appWindowData("applicationWindow" + QString::number(i),
+                                    "Touchscreen Determination" + QString::number(i),
+                                    QString(monitors[i].nameString) + ": " + QString::number(monitors[i].width) + "x" +
+                                    QString::number(monitors[i].height) + "+" + QString::number(monitors[i].x) + "+" +
+                                    QString::number(monitors[i].y),
+                                    monitors[i].width, monitors[i].height, monitors[i].x, monitors[i].y);
+
+        appWindowModel.addAppWindowData(appWindowData);
+    }
+
+    engine.load(url);
+
+    if (fullscreen) {
+        auto rootObject = engine.rootObjects()[0];
+        rootObject->setProperty("visibility", QWindow::FullScreen);
     }
 
     auto mapping = Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices());

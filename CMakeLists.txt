@@ -5,7 +5,7 @@ set(CMAKE_AUTOMOC on)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/Qt5/Qt5.13.1/5.13.1/gcc_64")
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};/opt/Qt5/Qt5.14.1/5.14.1/gcc_64;/opt/qt5;/opt/qt5/5.14.2/gcc_64")
 
 find_package(Qt5 COMPONENTS Core Qml Gui QuickCompiler Quick QuickControls2 REQUIRED)
 
@@ -15,7 +15,9 @@ set(SOURCES
 		src/Monitor.cpp
 		src/InputDevice.cpp
 		src/Mapping.cpp
-)
+		model/AppWindowModel.cpp
+		model/AppWindowData.cpp
+		)
 
 qtquick_compiler_add_resources(RESOURCES qml.qrc)
 

@@ -1,42 +1,33 @@
 import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQuick.Window 2.13
+
 import "qml/"
 
-QtObject {
-    id: root
+Instantiator {
+    id: windowInstantiator
 
-    property var window0: Window {
-        id: applicationWindow0
+    property var visibility: ApplicationWindow.Windowed
 
-        property string device
+    model: ApplicationDataModel
 
+    delegate: Window {
+        id: applicationWindow
+
+        property string device: model.deviceInfo
+
+        visibility: windowInstantiator.visibility
         visible: true
 
-        visibility: ApplicationWindow.Windowed
-
-        objectName: "applicationWindow0"
-
-        MainArea {
-            id: leftScreen
-            device: applicationWindow0.device
-        }
-    }
-
-    property var window1: Window {
-        id: applicationWindow1
-
-        property string device
-
-        visible: true
-
-        visibility: ApplicationWindow.Windowed
-
-        objectName: "applicationWindow1"
+        title: model.title
+        objectName: model.objectName
+        width: model.width
+        height: model.height
+        x: model.x
+        y: model.y
 
         MainArea {
-            id: rightScreen
-            device: applicationWindow1.device
+            device: applicationWindow.device
         }
     }
 }
