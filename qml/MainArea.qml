@@ -1,20 +1,15 @@
 import QtQuick 2.13
 
-import io.qt.examples.backend 1.0
-
 Rectangle {
     id: mainArea
 
-    property string device
+    property string deviceInfo
+    property bool touchAreaVisible
 
     anchors.fill: parent
     color: "#2B2B2B"
 
-    Backend {
-        id: backend
-    }
-
-    Rectangle {
+   Rectangle {
         id: monitorInfo
 
         anchors.left: parent.left
@@ -31,27 +26,26 @@ Rectangle {
             anchors.leftMargin: 20
             anchors.verticalCenter: parent.verticalCenter
             font.pixelSize: 18
-            text: mainArea.device
+            text: mainArea.deviceInfo
         }
     }
 
     Rectangle {
-        id: button
+        id: touchArea
 
         property bool checked: false
-        property point globalPos
 
         width: 200
         height: 200
         radius: 100
-        color: button.checked ? "#82CA9C" : "#F26C4F"
+        color: touchArea.checked ? "#82CA9C" : "#F26C4F"
         anchors.centerIn: parent
+        opacity: touchAreaVisible ? 1 : 0
 
         Text {
             anchors.centerIn: parent
             font.pixelSize: 18
-            text: button.checked ? (Math.round(button.globalPos.x)) + "x" + (Math.round(button.globalPos.y))
-                                  : "Push the Button!"
+            text: touchArea.checked ? Backend.lastInput.x + "x" + Backend.lastInput.y : "Push the Button!"
         }
 
         MouseArea {
@@ -61,9 +55,9 @@ Rectangle {
             height: parent.height
             anchors.centerIn: parent
             onClicked: {
-                button.globalPos = mapToGlobal(mouseArea.x + mouseArea.width/2, mouseArea.y + mouseArea.height/2)
-                button.checked = button.checked === false ? true : false
-                backend.buttonClicked(button.globalPos)
+                Backend.lastInput = mapToGlobal(mouseArea.x + mouseArea.width/2, mouseArea.y + mouseArea.height/2)
+                touchArea.checked = touchArea.checked === false ? true : false
+                Backend.touchAreaClicked()
             }
         }
     }

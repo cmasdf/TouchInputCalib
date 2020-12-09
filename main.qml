@@ -14,7 +14,8 @@ Instantiator {
     delegate: Window {
         id: applicationWindow
 
-        property string device: model.deviceInfo
+        property string deviceInfo: model.deviceInfo
+        property bool touchAreaVisible: true
 
         visibility: windowInstantiator.visibility
         visible: true
@@ -27,7 +28,10 @@ Instantiator {
         y: model.y
 
         MainArea {
-            device: applicationWindow.device
+            id: mainArea
+
+            deviceInfo: applicationWindow.deviceInfo
+            touchAreaVisible: applicationWindow.touchAreaVisible
         }
     }
 }

@@ -44,9 +44,12 @@ int main(int argc, char *argv[]) {
     auto monitor = Monitor();
     auto inputDev = InputDevice();
 
-    qmlRegisterType<Backend>("io.qt.examples.backend", 1, 0, "Backend");
-
     QQmlApplicationEngine engine;
+
+    //register ui backends
+    auto *backend = new Backend();
+    backend->registerSingleton(&engine);
+
     AppWindowModel appWindowModel;
     engine.rootContext()->setContextProperty("ApplicationDataModel", &appWindowModel);
 
@@ -60,8 +63,8 @@ int main(int argc, char *argv[]) {
     QVector<Monitor_t> monitors = monitor.getListOfMonitors();
 
     for (int i=0; i<monitors.size(); i++) {
-        AppWindowData appWindowData("applicationWindow" + QString::number(i),
-                                    "Touchscreen Determination" + QString::number(i),
+        AppWindowData appWindowData("Touchscreen Determination" + QString::number(i),
+                                    "applicationWindow" + QString::number(i),
                                     QString(monitors[i].nameString) + ": " + QString::number(monitors[i].width) + "x" +
                                     QString::number(monitors[i].height) + "+" + QString::number(monitors[i].x) + "+" +
                                     QString::number(monitors[i].y),
@@ -75,6 +78,11 @@ int main(int argc, char *argv[]) {
     if (fullscreen) {
         auto rootObject = engine.rootObjects()[0];
         rootObject->setProperty("visibility", QWindow::FullScreen);
+    }
+
+    auto wnd = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow0");
+    if(wnd) {
+        wnd->setProperty("touchAreaVisible", false);
     }
 
     auto mapping = Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices());
