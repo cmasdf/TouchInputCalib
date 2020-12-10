@@ -5,6 +5,7 @@ Rectangle {
 
     property string deviceInfo
     property bool touchAreaVisible
+    property string userInfo
 
     anchors.fill: parent
     color: "#2B2B2B"
@@ -33,19 +34,21 @@ Rectangle {
     Rectangle {
         id: touchArea
 
-        property bool checked: false
-
         width: 200
         height: 200
         radius: 100
-        color: touchArea.checked ? "#82CA9C" : "#F26C4F"
+        color: MainAreaBackend.clicked ? "#82CA9C" : "#F26C4F"
         anchors.centerIn: parent
         opacity: touchAreaVisible ? 1 : 0
+
+        onOpacityChanged: {
+            MainAreaBackend.clicked = false
+        }
 
         Text {
             anchors.centerIn: parent
             font.pixelSize: 18
-            text: touchArea.checked ? Backend.lastInput.x + "x" + Backend.lastInput.y : "Push the Button!"
+            text: MainAreaBackend.clicked ? MainAreaBackend.lastInput.x + "x" + MainAreaBackend.lastInput.y : mainArea.userInfo
         }
 
         MouseArea {
@@ -55,9 +58,9 @@ Rectangle {
             height: parent.height
             anchors.centerIn: parent
             onClicked: {
-                Backend.lastInput = mapToGlobal(mouseArea.x + mouseArea.width/2, mouseArea.y + mouseArea.height/2)
-                touchArea.checked = touchArea.checked === false ? true : false
-                Backend.touchAreaClicked()
+                MainAreaBackend.lastInput = mapToGlobal(mouseArea.x + mouseArea.width/2, mouseArea.y + mouseArea.height/2)
+                MainAreaBackend.clicked = true
+                MainAreaBackend.touchAreaClicked()
             }
         }
     }

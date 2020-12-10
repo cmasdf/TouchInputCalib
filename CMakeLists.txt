@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.13)
-PROJECT(TouchScreenDetermination)
+PROJECT(TouchInput2DisplayMapping)
 
 set(CMAKE_AUTOMOC on)
 set(CMAKE_AUTORCC ON)
@@ -11,7 +11,7 @@ find_package(Qt5 COMPONENTS Core Qml Gui QuickCompiler Quick QuickControls2 REQU
 
 set(SOURCES
         main.cpp
-		src/Backend.cpp
+		src/MainAreaBackend.cpp
 		src/Monitor.cpp
 		src/InputDevice.cpp
 		src/Mapping.cpp

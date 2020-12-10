@@ -8,7 +8,7 @@
 #include <src/Monitor.h>
 #include <src/InputDevice.h>
 #include <src/Mapping.h>
-#include <src/Backend.h>
+#include <src/MainAreaBackend.h>
 #include <model/AppWindowModel.h>
 #include <model/AppWindowData.h>
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
 
     //register ui backends
-    auto *backend = new Backend();
+    auto *backend = new MainAreaBackend();
     backend->registerSingleton(&engine);
 
     AppWindowModel appWindowModel;
