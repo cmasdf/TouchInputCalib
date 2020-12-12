@@ -5,24 +5,117 @@
  */
 
 #include <QDebug>
+#include <QPointF>
 #include <src/Mapping.h>
 
-Mapping::Mapping(QVector<Monitor_t> monitorDevices, QVector<InputDevices_t> inputDevices) {
+Mapping::Mapping(QVector<Monitor_t> monitorDevices, QVector<InputDevices_t> inputDevices,
+                 MainAreaBackend *mainAreaBackend, QQmlApplicationEngine *qmlEngine)
+                 {
+    // register meta types to facilitate the connection of queue arguments
+    qRegisterMetaType< QPointF >("QPointF");
+
     m_listOfMonitors = std::move(monitorDevices);
     m_listOfInputDevices = std::move(inputDevices);
+    m_mainAreaBackend = mainAreaBackend;
+    m_qmlEngine = qmlEngine;
+    m_numberOfReceivedTouchInputs = 0;
 
-    Display* display = XOpenDisplay(nullptr);
+    // incoming signals
+    // connection between MainAreaBackend and Mapping
+    connect(m_mainAreaBackend, &MainAreaBackend::touchAreaClicked, this, &Mapping::touchAreaClicked );
 
-    int size = m_listOfMonitors.size() <= m_listOfInputDevices.size() ? m_listOfMonitors.size() :
-               m_listOfInputDevices.size();
+    m_numberOfScreens = m_listOfMonitors.size();
 
-    for (int i = 0 ; i < size; i++) {
+    for (int i = 0 ; i < m_numberOfScreens; i++) {
+        Display *display = XOpenDisplay(nullptr);
         mapOutputXrandr(display, m_listOfInputDevices[i].id, m_listOfMonitors[i].nameString);
         qDebug() << "xinput map-to-output" << m_listOfInputDevices[i].id << m_listOfMonitors[i].nameString;
+        XCloseDisplay(display);
+
+        PhysicalDisplay_t phyDpy;
+
+        auto wnd = m_qmlEngine->rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow" + QString::number(i));
+        if (wnd) {
+            phyDpy.window = wnd;
+        } else {
+            phyDpy.window = nullptr;
+        }
+        phyDpy.port                 = m_listOfMonitors[i].nameString;
+        phyDpy.inputDeviceID        = m_listOfInputDevices[i].id;
+        phyDpy.targetTouchPoint     = {wnd->x() + wnd->width()/2, wnd->y() + wnd->height()/2};
+        phyDpy.actualTouchPoint     = {0,0};
+        phyDpy.mappingSuccessful    = false;
+
+        m_listOfPhysicalDisplays.append(phyDpy);
     }
 }
 
 Mapping::~Mapping() = default;
+
+void Mapping::mappingStart() {
+    m_listOfPhysicalDisplays[0].window->setProperty("touchAreaVisible", true);
+}
+
+void Mapping::touchAreaClicked(QPointF point) {
+    qDebug() << "Touch area clicked";
+
+    int idx = m_numberOfReceivedTouchInputs;
+    QQuickWindow * currentWindow = m_listOfPhysicalDisplays[idx].window;
+    m_listOfPhysicalDisplays[idx].actualTouchPoint = point.toPoint();
+    if (m_listOfPhysicalDisplays[idx].actualTouchPoint == m_listOfPhysicalDisplays[idx].targetTouchPoint) {
+        m_listOfPhysicalDisplays[idx].mappingSuccessful = true;
+    }
+
+    qDebug() << "targetTouchPoint:" << m_listOfPhysicalDisplays[idx].targetTouchPoint
+             << "actualTouchPoint:" << m_listOfPhysicalDisplays[idx].actualTouchPoint;
+
+    currentWindow->setProperty("showResult", true);
+    currentWindow->setProperty("touchAreaVisible", false);
+
+    m_numberOfReceivedTouchInputs++;
+
+    if (m_numberOfReceivedTouchInputs == m_numberOfScreens) {
+        bool complete = true;
+
+        for (const auto &phyDpy : m_listOfPhysicalDisplays) {
+            complete &= phyDpy.mappingSuccessful;
+        }
+
+        if (complete) {
+            for (const auto &phyDpy : m_listOfPhysicalDisplays) {
+                phyDpy.window->setProperty("touchAreaActive", false);
+            }
+            m_listOfPhysicalDisplays[0].window->setProperty("userInfo", "Mapping successful!");
+            m_listOfPhysicalDisplays[0].window->setProperty("showResult", false);
+            m_listOfPhysicalDisplays[0].window->setProperty("touchAreaVisible", true);
+            qDebug() << "Mapping successful!";
+            return;
+        } else {
+            m_numberOfReceivedTouchInputs = 0;
+
+            QVector<PhysicalDisplay_t> listOfPhysDpyCopy = m_listOfPhysicalDisplays;
+
+
+            for (auto &phyDpy : m_listOfPhysicalDisplays) {
+                if (!phyDpy.mappingSuccessful) {
+                    for(auto const &element : listOfPhysDpyCopy) {
+                        if (phyDpy.targetTouchPoint == element.actualTouchPoint) {
+                            phyDpy.inputDeviceID = element.inputDeviceID;
+                            break;
+                        }
+                    }
+                    Display *display = XOpenDisplay(nullptr);
+                    mapOutputXrandr(display, phyDpy.inputDeviceID, phyDpy.port);
+                    qDebug() << "xinput map-to-output" << phyDpy.inputDeviceID << phyDpy.port;
+                    XCloseDisplay(display);
+                }
+            }
+        }
+    }
+
+    m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("showResult", false);
+    m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("touchAreaVisible", true);
+}
 
 int Mapping::mapOutputXrandr(Display *dpy, int deviceId, const char *outputName) {
     int rc = EXIT_FAILURE;

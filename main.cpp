@@ -46,10 +46,6 @@ int main(int argc, char *argv[]) {
 
     QQmlApplicationEngine engine;
 
-    //register ui backends
-    auto *backend = new MainAreaBackend();
-    backend->registerSingleton(&engine);
-
     AppWindowModel appWindowModel;
     engine.rootContext()->setContextProperty("ApplicationDataModel", &appWindowModel);
 
@@ -73,19 +69,20 @@ int main(int argc, char *argv[]) {
         appWindowModel.addAppWindowData(appWindowData);
     }
 
+    //register ui backends
+    auto *mainAreaBackend = new MainAreaBackend();
+    mainAreaBackend->registerSingleton(&engine);
+
     engine.load(url);
+
+    auto* mapping = new Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices(), mainAreaBackend, &engine);
 
     if (fullscreen) {
         auto rootObject = engine.rootObjects()[0];
         rootObject->setProperty("visibility", QWindow::FullScreen);
     }
 
-    auto wnd = engine.rootObjects()[0]->findChild<QQuickWindow *>("applicationWindow0");
-    if(wnd) {
-        wnd->setProperty("touchAreaVisible", false);
-    }
-
-    auto mapping = Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices());
+    mapping->mappingStart();
 
     return QGuiApplication::exec();
 }

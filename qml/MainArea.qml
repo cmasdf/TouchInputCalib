@@ -5,12 +5,14 @@ Rectangle {
 
     property string deviceInfo
     property bool touchAreaVisible
+    property bool touchAreaActive
+    property bool showResult
     property string userInfo
 
     anchors.fill: parent
     color: "#2B2B2B"
 
-   Rectangle {
+    Rectangle {
         id: monitorInfo
 
         anchors.left: parent.left
@@ -37,18 +39,21 @@ Rectangle {
         width: 200
         height: 200
         radius: 100
-        color: MainAreaBackend.clicked ? "#82CA9C" : "#F26C4F"
+        color: mainArea.showResult ? "#F26C4F" : "#82CA9C"
         anchors.centerIn: parent
         opacity: touchAreaVisible ? 1 : 0
 
-        onOpacityChanged: {
-            MainAreaBackend.clicked = false
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 2000;
+                easing.type: Easing.InOutQuad
+            }
         }
 
         Text {
             anchors.centerIn: parent
             font.pixelSize: 18
-            text: MainAreaBackend.clicked ? MainAreaBackend.lastInput.x + "x" + MainAreaBackend.lastInput.y : mainArea.userInfo
+            text: mainArea.showResult ? MainAreaBackend.lastInput.x + "x" + MainAreaBackend.lastInput.y : mainArea.userInfo
         }
 
         MouseArea {
@@ -57,10 +62,10 @@ Rectangle {
             width: parent.width
             height: parent.height
             anchors.centerIn: parent
+            enabled: mainArea.touchAreaActive && (touchArea.opacity == 1 || touchArea.opacity == 0)
             onClicked: {
                 MainAreaBackend.lastInput = mapToGlobal(mouseArea.x + mouseArea.width/2, mouseArea.y + mouseArea.height/2)
-                MainAreaBackend.clicked = true
-                MainAreaBackend.touchAreaClicked()
+                MainAreaBackend.touchAreaClicked(MainAreaBackend.lastInput)
             }
         }
     }

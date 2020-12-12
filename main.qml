@@ -15,7 +15,9 @@ Instantiator {
         id: applicationWindow
 
         property string deviceInfo: model.deviceInfo
-        property bool touchAreaVisible: true
+        property bool touchAreaVisible: false
+        property bool touchAreaActive: true
+        property bool showResult: false
         property string userInfo: "Push this button!"
 
         visibility: windowInstantiator.visibility
@@ -33,6 +35,8 @@ Instantiator {
 
             deviceInfo: applicationWindow.deviceInfo
             touchAreaVisible: applicationWindow.touchAreaVisible
+            touchAreaActive: applicationWindow.touchAreaActive
+            showResult: applicationWindow.showResult
             userInfo: applicationWindow.userInfo
         }
     }
