@@ -3,4 +3,7 @@
         <file>main.qml</file>
         <file>qml/MainArea.qml</file>
     </qresource>
+    <qresource prefix="/res">
+        <file>img/close.png</file>
+    </qresource>
 </RCC>

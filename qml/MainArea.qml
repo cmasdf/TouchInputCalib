@@ -1,4 +1,5 @@
 import QtQuick 2.13
+import QtGraphicalEffects 1.14
 
 Rectangle {
     id: mainArea
@@ -30,6 +31,49 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             font.pixelSize: 18
             text: mainArea.deviceInfo
+        }
+    }
+
+    Rectangle {
+        id: closeButton
+
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.rightMargin: 40
+        anchors.topMargin: 40
+        width: 50
+        height: 50
+        radius: 25
+        color: "#F26C4F"
+
+        Image {
+            id: closeIcon
+
+            width: 22
+            height: 22
+            fillMode: Image.PreserveAspectFit
+            anchors.centerIn: parent
+            horizontalAlignment: Image.AlignHCenter
+            verticalAlignment: Image.AlignVCenter
+            source: "qrc:/res/img/close.png"
+            sourceSize.height: 22
+
+            ColorOverlay {
+                anchors.fill: parent
+                source: parent
+                color: "white"
+            }
+        }
+
+         MouseArea {
+            id: closeArea
+
+            width: parent.width
+            height: parent.height
+            anchors.centerIn: parent
+            onClicked: {
+               Qt.quit()
+            }
         }
     }
 
