@@ -18,6 +18,7 @@ Instantiator {
         property bool touchAreaVisible: false
         property bool touchAreaActive: true
         property bool showResult: false
+        property bool wrongResult: false
         property string userInfo: "Push this button!"
 
         visibility: windowInstantiator.visibility
@@ -37,6 +38,7 @@ Instantiator {
             touchAreaVisible: applicationWindow.touchAreaVisible
             touchAreaActive: applicationWindow.touchAreaActive
             showResult: applicationWindow.showResult
+            wrongResult: applicationWindow.wrongResult
             userInfo: applicationWindow.userInfo
         }
     }

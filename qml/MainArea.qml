@@ -8,6 +8,7 @@ Rectangle {
     property bool touchAreaVisible
     property bool touchAreaActive
     property bool showResult
+    property bool wrongResult
     property string userInfo
 
     anchors.fill: parent
@@ -77,13 +78,30 @@ Rectangle {
         }
     }
 
+    RectangularGlow {
+        id: effect
+        anchors.fill: touchArea
+        glowRadius: 6
+        spread: 0.2
+        color: mainArea.showResult && mainArea.wrongResult ? "#F26C4F" : "#82CA9C"
+        cornerRadius: touchArea.radius + glowRadius
+        opacity: touchAreaVisible ? 1 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 2000;
+                easing.type: Easing.InOutQuad
+            }
+        }
+    }
+
     Rectangle {
         id: touchArea
 
         width: 200
         height: 200
         radius: 100
-        color: mainArea.showResult ? "#F26C4F" : "#82CA9C"
+        color: mainArea.showResult && mainArea.wrongResult ? "#F26C4F" : "#82CA9C"
         anchors.centerIn: parent
         opacity: touchAreaVisible ? 1 : 0
 

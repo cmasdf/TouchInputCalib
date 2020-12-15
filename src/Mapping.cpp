@@ -64,6 +64,8 @@ void Mapping::touchAreaClicked(QPointF point) {
     m_listOfPhysicalDisplays[idx].actualTouchPoint = point.toPoint();
     if (m_listOfPhysicalDisplays[idx].actualTouchPoint == m_listOfPhysicalDisplays[idx].targetTouchPoint) {
         m_listOfPhysicalDisplays[idx].mappingSuccessful = true;
+    } else {
+        currentWindow->setProperty("wrongResult", true);
     }
 
     qDebug() << "targetTouchPoint:" << m_listOfPhysicalDisplays[idx].targetTouchPoint
@@ -87,6 +89,7 @@ void Mapping::touchAreaClicked(QPointF point) {
             }
             m_listOfPhysicalDisplays[0].window->setProperty("userInfo", "Mapping successful!");
             m_listOfPhysicalDisplays[0].window->setProperty("showResult", false);
+            m_listOfPhysicalDisplays[0].window->setProperty("wrongResult", false);
             m_listOfPhysicalDisplays[0].window->setProperty("touchAreaVisible", true);
             qDebug() << "Mapping successful!";
             return;
@@ -114,6 +117,7 @@ void Mapping::touchAreaClicked(QPointF point) {
     }
 
     m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("showResult", false);
+    m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("wrongResult", false);
     m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("touchAreaVisible", true);
 }
 
