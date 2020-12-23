@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.13)
-PROJECT(TouchInput2DisplayMapping)
+PROJECT(TouchinputCalibration)
 
 set(CMAKE_AUTOMOC on)
 set(CMAKE_AUTORCC ON)
