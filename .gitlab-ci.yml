@@ -1,0 +1,65 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - apt-get update && apt-get install -y libfuse-dev uuid-dev
+
+
+build_linux_arm64_debug:
+  # assign job to a predefined stage
+  stage: build
+  #select docker image
+  image: docker-registry.ftcn:5001/eso1/multimedia-seat/debian-10-qt-cross-amd64-arm64
+
+  script:
+    - apt-get update && apt-get install -y libfuse-dev g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
+    # add build and bin directory
+    - mkdir -p "${CI_PROJECT_DIR}/bin"
+    - mkdir -p "${CI_PROJECT_DIR}/build"
+    # execute cmake to generate make files - overwrite executable output path
+    - cd build
+    - cmake -DCMAKE_TOOLCHAIN_FILE=${CI_PROJECT_DIR}/toolchains/linux-amd64-aarch64.toolchain -DEXECUTABLE_OUTPUT_PATH="${CI_PROJECT_DIR}/bin" -DCMAKE_BUILD_TYPE=Debug -DCI_BUILD=ON -DCROSS_BUILD=ON -Wno-dev ..
+    # build executables
+    - make -B
+  artifacts:
+    paths:
+      # archive build artifacts from overwritten executable output path
+      - ${CI_PROJECT_DIR}/bin/*
+    expire_in: 2 weeks
+  only:
+    - development
+    - master
+  except:
+    refs:
+      - tags
+
+  tags:
+    - linux
+    - docker
+
+
+deploy_linux_aarch64_debug:
+  stage: deploy
+
+  image: ${CI_REGISTRY}/eso1/multimedia-seat/debian-10-qt-amd64
+
+  variables:
+    GIT_STRATEGY: none
+
+  dependencies:
+    - build_linux_arm64_debug
+
+  script:
+    - apt-get update && apt-get install -y curl
+    - curl --insecure -L -X POST  -F token=5e369081dc991dedcb5faf3924fb7b -F "ref=master" -F "variables[RelType]=development" -F "variables[triggerName]=$CI_PROJECT_NAME" -F "variables[triggerHash]=$CI_COMMIT_SHORT_SHA"  https://gitlab.ftcn/api/v4/projects/34/trigger/pipeline
+
+  only:
+    - development
+    - master
+  except:
+    refs:
+      - tags
+
+  tags:
+    - linux
+    - docker

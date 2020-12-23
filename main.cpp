@@ -20,27 +20,6 @@ int main(int argc, char *argv[]) {
 
     QGuiApplication app(argc, argv);
 
-    // initialize the QCommandLineParser
-    QCommandLineParser parser;
-
-    // create the command line options
-    QCommandLineOption fullscreenOption(QStringList() << "fullscreen", "start application in fullscreen mode");
-
-    // assign the command line options to the parser
-    parser.addHelpOption();
-    parser.addOptions({
-        fullscreenOption
-    });
-
-    // assign the parser process
-    parser.process(app);
-
-    // command line actions
-    // command : fullscreen
-    if(parser.isSet(fullscreenOption)){
-        fullscreen = true;
-    }
-
     auto monitor = Monitor();
     auto inputDev = InputDevice();
 
@@ -77,10 +56,8 @@ int main(int argc, char *argv[]) {
 
     auto* mapping = new Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices(), mainAreaBackend, &engine);
 
-    if (fullscreen) {
-        auto rootObject = engine.rootObjects()[0];
-        rootObject->setProperty("visibility", QWindow::FullScreen);
-    }
+    auto rootObject = engine.rootObjects()[0];
+    rootObject->setProperty("visibility", QWindow::FullScreen);
 
     mapping->mappingStart();
 
