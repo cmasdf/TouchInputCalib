@@ -14,6 +14,7 @@ Mapping::Mapping(QVector<Monitor_t> monitorDevices, QVector<InputDevices_t> inpu
     // register meta types to facilitate the connection of queue arguments
     qRegisterMetaType< QPointF >("QPointF");
 
+    // initialize module attributes
     m_listOfMonitors = std::move(monitorDevices);
     m_listOfInputDevices = std::move(inputDevices);
     m_mainAreaBackend = mainAreaBackend;
@@ -26,6 +27,9 @@ Mapping::Mapping(QVector<Monitor_t> monitorDevices, QVector<InputDevices_t> inpu
 
     m_numberOfScreens = m_listOfMonitors.size();
 
+    // map each touch input device to a monitor
+    // first input device to first monitor, second input device to second monitor and so on...
+    // generate list of physical devices
     for (int i = 0 ; i < m_numberOfScreens; i++) {
         Display *display = XOpenDisplay(nullptr);
         mapOutputXrandr(display, m_listOfInputDevices[i].id, m_listOfMonitors[i].nameString);
@@ -53,6 +57,7 @@ Mapping::Mapping(QVector<Monitor_t> monitorDevices, QVector<InputDevices_t> inpu
 Mapping::~Mapping() = default;
 
 void Mapping::mappingStart() {
+    // activate (make visible) touch area on first display
     m_listOfPhysicalDisplays[0].window->setProperty("touchAreaVisible", true);
 }
 
@@ -62,6 +67,7 @@ void Mapping::touchAreaClicked(QPointF point) {
     int idx = m_numberOfReceivedTouchInputs;
     QQuickWindow * currentWindow = m_listOfPhysicalDisplays[idx].window;
     m_listOfPhysicalDisplays[idx].actualTouchPoint = point.toPoint();
+    // check of clicked touch point has the expected coordinates
     if (m_listOfPhysicalDisplays[idx].actualTouchPoint == m_listOfPhysicalDisplays[idx].targetTouchPoint) {
         m_listOfPhysicalDisplays[idx].mappingSuccessful = true;
     } else {
@@ -71,18 +77,22 @@ void Mapping::touchAreaClicked(QPointF point) {
     qDebug() << "targetTouchPoint:" << m_listOfPhysicalDisplays[idx].targetTouchPoint
              << "actualTouchPoint:" << m_listOfPhysicalDisplays[idx].actualTouchPoint;
 
+    // show result and make current touch point invisible
     currentWindow->setProperty("showResult", true);
     currentWindow->setProperty("touchAreaVisible", false);
 
     m_numberOfReceivedTouchInputs++;
 
+    // check if all existing touch points were shown
     if (m_numberOfReceivedTouchInputs == m_numberOfScreens) {
         bool complete = true;
 
+        // if mapping was successful for all active monitors, set the complete flag
         for (const auto &phyDpy : m_listOfPhysicalDisplays) {
             complete &= phyDpy.mappingSuccessful;
         }
 
+        // if the complete flag is set, show user that mapping procedure was successfully completed
         if (complete) {
             for (const auto &phyDpy : m_listOfPhysicalDisplays) {
                 phyDpy.window->setProperty("touchAreaActive", false);
@@ -93,11 +103,12 @@ void Mapping::touchAreaClicked(QPointF point) {
             m_listOfPhysicalDisplays[0].window->setProperty("touchAreaVisible", true);
             qDebug() << "Mapping successful!";
             return;
-        } else {
+        }
+        // adapt mapping of input devices and monitors by using the targetTouchPoint and actualTouchPoint values
+        else {
             m_numberOfReceivedTouchInputs = 0;
 
             QVector<PhysicalDisplay_t> listOfPhysDpyCopy = m_listOfPhysicalDisplays;
-
 
             for (auto &phyDpy : m_listOfPhysicalDisplays) {
                 if (!phyDpy.mappingSuccessful) {
@@ -116,6 +127,7 @@ void Mapping::touchAreaClicked(QPointF point) {
         }
     }
 
+    // show the next touch point
     m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("showResult", false);
     m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("wrongResult", false);
     m_listOfPhysicalDisplays[m_numberOfReceivedTouchInputs].window->setProperty("touchAreaVisible", true);
@@ -129,7 +141,7 @@ int Mapping::mapOutputXrandr(Display *dpy, int deviceId, const char *outputName)
     res = XRRGetScreenResources(dpy, DefaultRootWindow(dpy));
     outputInfo = findOutputXrandr(dpy, outputName);
 
-    /* crtc holds our screen info, need to compare to actual screen size */
+    // crtc holds our screen info, need to compare to actual screen size
     if (outputInfo) {
         XRRCrtcInfo *crtcInfo;
         Matrix m;
@@ -149,7 +161,7 @@ int Mapping::mapOutputXrandr(Display *dpy, int deviceId, const char *outputName)
     return rc;
 }
 
-/* Caller must free return value */
+// Caller must free return value
 XRROutputInfo *Mapping::findOutputXrandr(Display *dpy, const char *outputName) {
     XRRScreenResources *res;
     XRROutputInfo *outputInfo = nullptr;
@@ -255,15 +267,15 @@ void Mapping::matrixS4(Matrix *m, float x02, float x12, float d1, float d2, int 
 
 void Mapping::setTransformationMatrix(Display *dpy, Matrix *m, int offset_x, int offset_y, int screen_width,
                                       int screen_height, int rotation) {
-    /* total display size */
+    // total display size
     int width = DisplayWidth(dpy, DefaultScreen(dpy));
     int height = DisplayHeight(dpy, DefaultScreen(dpy));
 
-    /* offset */
+    // offset
     float x = 1.0 * offset_x / width;
     float y = 1.0 * offset_y / height;
 
-    /* mapping */
+    // mapping
     float w = 1.0 * screen_width / width;
     float h = 1.0 * screen_height / height;
 

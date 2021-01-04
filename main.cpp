@@ -13,18 +13,18 @@
 #include <model/AppWindowData.h>
 
 int main(int argc, char *argv[]) {
-    // processing command line inputs
-    bool fullscreen = false;
-
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
 
+    // create list of active monitors
     auto monitor = Monitor();
+    // create list of touch input devices
     auto inputDev = InputDevice();
 
     QQmlApplicationEngine engine;
 
+    // app window model
     AppWindowModel appWindowModel;
     engine.rootContext()->setContextProperty("ApplicationDataModel", &appWindowModel);
 
@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
 
     QVector<Monitor_t> monitors = monitor.getListOfMonitors();
 
+    // create a fullscreen application window on each display
     for (int i=0; i<monitors.size(); i++) {
         AppWindowData appWindowData("Touchscreen Determination" + QString::number(i),
                                     "applicationWindow" + QString::number(i),
@@ -48,17 +49,19 @@ int main(int argc, char *argv[]) {
         appWindowModel.addAppWindowData(appWindowData);
     }
 
-    //register ui backends
+    // register main area backend
     auto *mainAreaBackend = new MainAreaBackend();
     mainAreaBackend->registerSingleton(&engine);
 
     engine.load(url);
 
+    // initialize mapping
     auto* mapping = new Mapping(monitor.getListOfMonitors(), inputDev.getListOfInputDevices(), mainAreaBackend, &engine);
 
     auto rootObject = engine.rootObjects()[0];
     rootObject->setProperty("visibility", QWindow::FullScreen);
 
+    // start mapping
     mapping->mappingStart();
 
     return QGuiApplication::exec();

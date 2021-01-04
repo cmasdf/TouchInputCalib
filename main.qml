@@ -14,11 +14,17 @@ Instantiator {
     delegate: Window {
         id: applicationWindow
 
-        property string deviceInfo: model.deviceInfo
+        // device info string
+        property string deviceInfo:  model.deviceInfo
+        // touch area visible flag
         property bool touchAreaVisible: false
+        // touch area active (clickable) flag
         property bool touchAreaActive: true
+        // show result flag
         property bool showResult: false
+        // result is wrong (wrong click) flag
         property bool wrongResult: false
+        // user info string
         property string userInfo: "Push this button!"
 
         visibility: windowInstantiator.visibility
