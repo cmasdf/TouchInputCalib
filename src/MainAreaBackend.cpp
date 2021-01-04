@@ -2,6 +2,7 @@
 #include <src/MainAreaBackend.h>
 
 MainAreaBackend::MainAreaBackend(QObject *parent) : QObject(parent) {
+    // initialize last input to (0,0)
     m_lastInput = QPointF(0,0);
 }
 

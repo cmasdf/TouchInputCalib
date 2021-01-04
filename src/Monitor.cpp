@@ -13,11 +13,14 @@ Monitor::Monitor() {
     Window root;
     int n_monitors = 0;
 
+    // open display
     display = XOpenDisplay(nullptr);
     root = DefaultRootWindow(display);
 
+    // get specification of all active monitors
     monitorInfo = XRRGetMonitors(display, root, true, &n_monitors);
 
+    // put specification of all active monitors into the monitor item list
     for (int i = 0; i < n_monitors; i++) {
         char* name;
         name = XGetAtomName(display, monitorInfo->name);

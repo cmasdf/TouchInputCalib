@@ -4,11 +4,17 @@ import QtGraphicalEffects 1.14
 Rectangle {
     id: mainArea
 
+    // device info string
     property string deviceInfo
+    // touch area visible flag
     property bool touchAreaVisible
+    // touch area active (clickable) flag
     property bool touchAreaActive
+    // show result flag
     property bool showResult
+    // result is wrong (wrong click) flag
     property bool wrongResult
+    // user info string
     property string userInfo
 
     anchors.fill: parent

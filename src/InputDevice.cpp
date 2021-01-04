@@ -12,10 +12,13 @@ InputDevice::InputDevice() {
     Display* display;
     int ndevices = 0;
 
+    // open display
     display = XOpenDisplay(nullptr);
 
+    // get specification of all input devices
     devices = XListInputDevices(display, &ndevices);
 
+    // extract specification of all touch displays and put it into the input device list
     for (int i = 0; i < ndevices; i++) {
         // add/show only TouchDisplays
         if (devices->type == 109) {
