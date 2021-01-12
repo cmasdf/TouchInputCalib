@@ -113,7 +113,7 @@ void Mapping::touchAreaClicked(QPointF point) {
             for (auto &phyDpy : m_listOfPhysicalDisplays) {
                 if (!phyDpy.mappingSuccessful) {
                     for(auto const &element : listOfPhysDpyCopy) {
-                        if (phyDpy.targetTouchPoint == element.actualTouchPoint) {
+                        if (element.targetTouchPoint == phyDpy.actualTouchPoint) {
                             phyDpy.inputDeviceID = element.inputDeviceID;
                             break;
                         }
